@@ -2,7 +2,7 @@ import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
-const API_URL = "https://stock-control-dike.onrender.com/api/users"; 
+const API_URL =  "https://stock-control-dike.onrender.com/api"; 
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ export function useLogin() {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await fetch(`${API_URL}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, password }),

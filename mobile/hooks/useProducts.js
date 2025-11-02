@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Alert } from "react-native";
 
-const API_URL = "https://stock-control-dike.onrender.com/api"; // 🟢 adapte ton IP locale
+const API_URL = process.env.API_URL || "https://stock-control-dike.onrender.com/api"; // 🟢 adapte ton IP locale
 
 export default function useProducts(user) {
   // --- États principaux ---

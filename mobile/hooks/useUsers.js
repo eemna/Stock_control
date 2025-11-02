@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-const API_URL = "https://stock-control-dike.onrender.com/api"; 
+const API_URL =  "https://stock-control-dike.onrender.com/api"; 
 
 export default function useUsers() {
   const [users, setUsers] = useState([]);

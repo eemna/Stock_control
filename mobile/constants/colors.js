@@ -30,7 +30,7 @@ const purpleTheme = {
   text: "#4A148C",
   border: "#D1C4E9",
   white: "#FFFFFF",
-  textLight: "#BA68C8",
+  textLight: "#ba68c8c2",
   expense: "#D32F2F",
   income: "#388E3C",
   card: "#FFFFFF",

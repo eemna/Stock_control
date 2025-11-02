@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Alert } from "react-native";
 
-const API_URL = "https://stock-control-dike.onrender.com/api"; // ⚠️ ton IP locale ici
+const API_URL = process.env.API_URL || "https://stock-control-dike.onrender.com/api"; // ⚠️ ton IP locale ici
 
 export default function useSuppliers() {
   const [suppliers, setSuppliers] = useState([]);
