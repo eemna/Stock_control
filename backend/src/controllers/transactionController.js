@@ -26,6 +26,44 @@ export async function getALLProductr(req, res ){
   }
     
 }
+// controllers/transactionsController.js
+export async function getGlobalSummary(req, res) {
+  try {
+    // Balance total de toutes les transactions
+    const balanceResult = await sql`
+      SELECT COALESCE(SUM(amount * quantity), 0) as balance FROM transactions
+    `;
+
+    // Total des revenus (amount > 0)
+    const incomeResult = await sql`
+      SELECT COALESCE(SUM(amount * quantity), 0) as income 
+      FROM transactions 
+      WHERE amount > 0
+    `;
+
+    // Total des dépenses (amount < 0)
+    const expensesResult = await sql`
+      SELECT COALESCE(SUM(amount * quantity), 0) as expenses 
+      FROM transactions 
+      WHERE amount < 0
+    `;
+
+    res.status(200).json({
+      balance: balanceResult[0].balance,
+      income: incomeResult[0].income,
+      expenses: expensesResult[0].expenses,
+    });
+  } catch (error) {
+    console.error("Erreur getGlobalSummary:", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+}
+
+
+
+
+
+
 export async function getSummaryByUserId(req, res) {
   try {
     const {user_id } = req.params;
@@ -50,10 +88,13 @@ export async function getSummaryByUserId(req, res) {
       expenses: expensesResult[0].expenses,
     });
   } catch (error) {
-    console.log("Error getting the summary", error);
+    console.log("Error gettin the summary", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
+// controllers/fournisseurController.js
+
+
 export async function deleteTransaction(req, res) {
   const { id } = req.params;
 
