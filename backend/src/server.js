@@ -18,25 +18,14 @@ app.use(rateLimiter);
 // middleware
 app.use(express.json());
 
-// ✅ CORRECT CORS CONFIGURATION
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://stock-control-dike.onrender.com",
-];
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
