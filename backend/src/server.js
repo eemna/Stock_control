@@ -7,18 +7,41 @@ import usersRoute from "./routes/usersRoute.js";
 import suppliersRoute from "./routes/suppliersRoute.js";
 import productsRoute from "./routes/productsRoute.js";
 import job from "./config/cron.js";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 5002;
+
 if (process.env.NODE_ENV === "production") job.start();
 app.use(rateLimiter);
 // middleware
 app.use(express.json());
-const PORT = process.env.PORT || 5002;
+
+// ✅ CORRECT CORS CONFIGURATION
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://stock-control-dike.onrender.com",
+];
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.get("/api/health", (req, res) => {
-    res.status(200).json({ status: "ok"});
+  res.status(200).json({ status: "ok" });
 });
+
 
 app.get("/", (req, res) => 
 { res.send("It's working");

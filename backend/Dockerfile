@@ -1,7 +1,7 @@
 FROM node:22-alpine
 
 # Définir le dossier de travail
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copier uniquement les fichiers nécessaires à l'installation
 COPY package*.json ./

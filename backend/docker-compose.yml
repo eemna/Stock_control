@@ -4,6 +4,7 @@ services:
   backend:
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: backend
     restart: always
     env_file:
@@ -13,7 +14,7 @@ services:
     networks:
       - stock-net
     volumes:
-      - ./backend:/app
+      - .:/app
       - /app/node_modules
 
 networks:

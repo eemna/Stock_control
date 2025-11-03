@@ -1,35 +1,37 @@
 # --- Étape 1 : Build de l'application Expo Web ---
 FROM node:22-alpine AS builder
 
+# Définir le répertoire de travail
 WORKDIR /app
 
+# Copier les fichiers nécessaires et installer les dépendances
 COPY package*.json ./
 RUN npm install
 
+# Copier le reste du code source
 COPY . .
 
-# Variable d’environnement passée depuis docker-compose
+# --- Variables d’environnement depuis docker-compose ---
 ARG API_URL
-ENV API_URL=${API_URL}
+ENV EXPO_PUBLIC_API_URL=${API_URL}
 
-# ✅ Compiler en incluant la variable d’environnement dans le build
-RUN echo "Building Expo Web with API_URL=${API_URL}"
+# ✅ Log utile pendant le build
+RUN echo "✅ Building Expo Web with API_URL=${EXPO_PUBLIC_API_URL}"
 
-# Compiler le projet
-RUN npx expo export --platform web
+# --- Build de l’application web Expo (Expo SDK 54) ---
+RUN npx expo export --platform web --output-dir dist
 
+# --- Étape 2 : Image finale légère avec Nginx ---
+FROM nginx:1.27-alpine
 
-# --- Étape 2 : Image finale ultra-légère ---
-FROM nginx:1-alpine
-
-# Supprimer la page par défaut de Nginx
+# Supprimer le contenu par défaut de Nginx
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copier le build généré par Expo
+# Copier les fichiers statiques générés depuis le builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Exposer le port web standard
+# Exposer le port HTTP standard
 EXPOSE 80
 
-# Lancer Nginx
+# Démarrer Nginx
 CMD ["nginx", "-g", "daemon off;"]
