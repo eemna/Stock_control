@@ -60,7 +60,7 @@ app.post("/webhook", async (req, res) => {
       const result = await sql`
         SELECT quantity 
         FROM products 
-        WHERE LOWER(title) = ${produit}
+        WHERE LOWER(title) = LOWER(${produit})
       `;
       if (result.length > 0) {
         responseText = `Il reste ${result[0].quantity} unités de ${produit}.`;
