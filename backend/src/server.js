@@ -8,6 +8,7 @@ import suppliersRoute from "./routes/suppliersRoute.js";
 import productsRoute from "./routes/productsRoute.js";
 import job from "./config/cron.js";
 import cors from "cors";
+import { sql } from "./config/db.js";
 
 dotenv.config();
 const app = express();
@@ -40,6 +41,47 @@ app.use("/api/transactions",transactionsRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/suppliers", suppliersRoute);
 app.use("/api/products", productsRoute);
+
+app.post("/webhook", async (req, res) => {
+  try {
+    const intent = req.body.queryResult.intent.displayName;
+    const parameters = req.body.queryResult.parameters;
+    let responseText = "";
+
+    // Intent 1 : nombre total de produits
+    if (intent === "NombreProduits") {
+      const result = await sql`SELECT COUNT(*) AS total FROM products`;
+      responseText = `Il y a ${result[0].total} produits enregistrés dans le stock.`;
+    }
+
+    // Intent 2 : quantité d’un produit spécifique
+    else if (intent === "QuantiteProduit") {
+      const produit = parameters.produit?.toLowerCase();
+      const result = await sql`
+        SELECT quantity 
+        FROM products 
+        WHERE LOWER(title) = ${produit}
+      `;
+      if (result.length > 0) {
+        responseText = `Il reste ${result[0].quantity} unités de ${produit}.`;
+      } else {
+        responseText = `Je ne trouve pas de produit nommé ${produit}.`;
+      }
+    }
+
+    // Intent inconnu
+    else {
+      responseText = "Je n’ai pas compris la question, peux-tu la reformuler ?";
+    }
+
+    // Réponse à Dialogflow
+    res.json({ fulfillmentText: responseText });
+
+  } catch (error) {
+    console.error("Erreur webhook:", error);
+    res.json({ fulfillmentText: "Erreur interne du serveur." });
+  }
+});
 
 initDB().then(() => {
     app.listen(PORT, () => {
